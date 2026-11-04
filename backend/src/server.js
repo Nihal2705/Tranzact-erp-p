@@ -16,6 +16,6 @@ app.get("/api/health", async (req, res) => {
     res.status(500).json({ status: "error", message: "Database not connected" });
   }
 });
-
+app.use("/api/auth", require("./routes/authRoutes"));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
