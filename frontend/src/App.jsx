@@ -1,3 +1,4 @@
+import ReportsPage from "./pages/ReportsPage";
 import ProductionPage from "./pages/ProductionPage";
 import ProductionDetailsPage from "./pages/ProductionDetailsPage";
 import OrdersPage from "./pages/OrdersPage";
@@ -24,7 +25,7 @@ export default function App() {
           
           <Route path="/production" element={<ProductionPage />} />
           <Route path="/production/:id" element={<ProductionDetailsPage />} />
-          <Route path="/reports"    element={<ComingSoon title="Reports" />} />
+          <Route path="/reports" element={<ReportsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
