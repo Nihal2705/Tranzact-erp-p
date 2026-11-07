@@ -9,5 +9,6 @@ router.use(requireAuth, allowRoles("Admin", "Manager"));
 
 router.get("/", wrap(c.getOrders));
 router.post("/", wrap(c.createOrder));
-
+router.put("/:id/status", wrap(c.updateOrderStatus));
+router.get("/:id/timeline", wrap(c.getTimeline));
 module.exports = router;
