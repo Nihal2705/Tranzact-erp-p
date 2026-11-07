@@ -18,6 +18,7 @@ app.get("/api/health", async (req, res) => {
 });
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/items", require("./routes/itemsRoutes"));
+app.use("/api/orders", require("./routes/ordersRoutes"));
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: "Something went wrong" });
