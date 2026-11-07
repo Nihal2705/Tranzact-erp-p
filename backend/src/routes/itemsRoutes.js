@@ -13,4 +13,5 @@ router.post("/", allowRoles("Admin", "Manager"), wrap(c.createItem));
 router.put("/:id", allowRoles("Admin", "Manager"), wrap(c.updateItem));
 router.put("/:id/stock", wrap(c.changeItemStock));   // all roles
 router.get("/:id/history", wrap(c.getHistory));      // all roles
+router.delete("/:id", allowRoles("Admin", "Manager"), wrap(c.deleteItem));
 module.exports = router;

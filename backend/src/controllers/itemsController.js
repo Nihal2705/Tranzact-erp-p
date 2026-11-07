@@ -115,4 +115,22 @@ async function getHistory(req, res) {
   );
   res.json(rows);
 }
-module.exports = { getItems, getLowStock, createItem, updateItem, changeItemStock, getHistory };
+async function deleteItem(req, res) {
+  try {
+    const { rows } = await pool.query(
+      "DELETE FROM items WHERE id = $1 RETURNING id, name",
+      [req.params.id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+    res.json({ message: "Item deleted", item: rows[0] });
+  } catch (err) {
+    console.error(err);
+    if (err.code === "23503") {
+      return res.status(409).json({ error: "Item has stock history and can't be deleted" });
+    }
+    res.status(500).json({ error: "Something went wrong" });
+  }
+}
+module.exports = { getItems, getLowStock, createItem, updateItem, changeItemStock, getHistory, deleteItem };
