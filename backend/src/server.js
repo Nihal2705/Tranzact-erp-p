@@ -1,10 +1,14 @@
 require("dotenv").config();
+if (!process.env.DATABASE_URL || !process.env.JWT_SECRET) {
+  console.error("Missing DATABASE_URL or JWT_SECRET in .env");
+  process.exit(1);
+}
 const express = require("express");
 const cors = require("cors");
 const pool = require("./config/db");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",") : true }));
 app.use(express.json());
 
 app.get("/api/health", async (req, res) => {
@@ -20,7 +24,12 @@ app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/items", require("./routes/itemsRoutes"));
 app.use("/api/orders", require("./routes/ordersRoutes"));
 app.use("/api/production", require("./routes/productionRoutes"));
+app.use("/api/reports", require("./routes/reportsRoutes"));
+app.use("/api", (req, res) => res.status(404).json({ error: "Route not found" }));
+
 app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") return res.status(400).json({ error: "Invalid JSON in request" });
+  if (err.code === "22P02") return res.status(400).json({ error: "Invalid id or value" });
   console.error(err);
   res.status(500).json({ error: "Something went wrong" });
 });

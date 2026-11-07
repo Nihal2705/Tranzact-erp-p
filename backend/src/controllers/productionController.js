@@ -22,11 +22,16 @@ async function queryProduction(where, params) {
 }
 
 async function getProduction(req, res) {
-  res.json(await queryProduction("WHERE ($1 = '' OR p.status = $1)", [req.query.status || ""]));
+  res.json(await queryProduction(
+    `WHERE ($1 = '' OR p.status = $1)
+       AND ($2 = '' OR p.created_at::date >= $2::date)
+       AND ($3 = '' OR p.created_at::date <= $3::date)`,
+    [req.query.status || "", req.query.from || "", req.query.to || ""]
+  ));
 }
 
 async function getProductionOne(req, res) {
-  const rows = await queryProduction("WHERE p.id = $1", [Number(req.params.id)]);
+  const rows = await queryProduction("WHERE p.id = $1", [req.params.id]);
   if (!rows[0]) return res.status(404).json({ error: "Production order not found" });
   res.json(rows[0]);
 }

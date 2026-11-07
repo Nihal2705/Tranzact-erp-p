@@ -6,6 +6,8 @@ const isNum = (v) => v !== "" && v !== null && !isNaN(Number(v));
 async function getOrders(req, res) {
   const type = req.query.order_type || "";
   const search = `%${req.query.search || ""}%`;
+  const from = req.query.from || "";
+  const to = req.query.to || "";
   const { rows } = await pool.query(
     `SELECT o.*,
        COALESCE(json_agg(json_build_object(
@@ -16,9 +18,11 @@ async function getOrders(req, res) {
      LEFT JOIN order_items oi ON oi.order_id = o.id
      LEFT JOIN items i ON i.id = oi.item_id
      WHERE ($1 = '' OR o.order_type = $1) AND o.party_name ILIKE $2
+       AND ($3 = '' OR o.order_date >= $3::date)
+       AND ($4 = '' OR o.order_date <= $4::date)
      GROUP BY o.id
      ORDER BY o.id DESC`,
-    [type, search]
+    [type, search, from, to]
   );
   res.json(rows);
 }
