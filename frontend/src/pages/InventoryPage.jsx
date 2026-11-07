@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
+import ItemFormModal from "../components/ItemFormModal";
+import ChangeStockModal from "../components/ChangeStockModal";
+import HistoryModal from "../components/HistoryModal";
 
 const PAGE_SIZE = 10;
 const money = (n) => "₹" + Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 });
@@ -11,6 +14,17 @@ export default function InventoryPage() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "name", dir: 1 });
   const [page, setPage] = useState(1);
+  const [modal, setModal] = useState(null);
+  const [toast, setToast] = useState("");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const canEdit = user.role === "Admin" || user.role === "Manager";
+
+  function saved(message) {
+    setModal(null);
+    setToast(message);
+    loadItems();
+    setTimeout(() => setToast(""), 3000);
+  }
 
   async function loadItems() {
     setLoading(true);
@@ -49,7 +63,18 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold text-slate-800">Inventory</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-slate-800">Inventory</h1>
+        {canEdit && (
+          <button
+            onClick={() => setModal({ type: "add" })}
+            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg"
+          >
+            + Add item
+          </button>
+        )}
+      </div>
+      {toast && <div className="bg-green-50 text-green-700 p-3 rounded">{toast}</div>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-white p-4 rounded-xl shadow-sm">
@@ -62,8 +87,12 @@ export default function InventoryPage() {
         </div>
       </div>
 
-      <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-        placeholder="Search items..." className="w-full sm:w-72 border rounded-lg px-3 py-2 bg-white" />
+      <input
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        placeholder="Search items..."
+        className="w-full sm:w-72 border rounded-lg px-3 py-2 bg-white"
+      />
 
       {loading && <p className="text-slate-500">Loading items...</p>}
       {error && (
@@ -80,6 +109,7 @@ export default function InventoryPage() {
               <tr>
                 <Th k="name">Item</Th><Th k="item_type">Type</Th><Th k="quantity">Stock</Th>
                 <Th>Unit</Th><Th k="price">Price</Th><Th k="value">Value</Th>
+                <Th>Actions</Th>
               </tr>
             </thead>
             <tbody>
@@ -91,6 +121,28 @@ export default function InventoryPage() {
                   <td className="px-4 py-3">{i.unit}</td>
                   <td className="px-4 py-3">{money(i.price)}</td>
                   <td className="px-4 py-3">{money(i.value)}</td>
+                  <td className="px-4 py-3 whitespace-nowrap space-x-3">
+                    <button
+                      onClick={() => setModal({ type: "stock", item: i })}
+                      className="text-teal-600 hover:underline"
+                    >
+                      Change stock
+                    </button>
+                    <button
+                      onClick={() => setModal({ type: "history", item: i })}
+                      className="text-slate-600 hover:underline"
+                    >
+                      History
+                    </button>
+                    {canEdit && (
+                      <button
+                        onClick={() => setModal({ type: "edit", item: i })}
+                        className="text-slate-600 hover:underline"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -103,6 +155,19 @@ export default function InventoryPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {modal?.type === "add" && (
+        <ItemFormModal onClose={() => setModal(null)} onSaved={saved} />
+      )}
+      {modal?.type === "edit" && (
+        <ItemFormModal item={modal.item} onClose={() => setModal(null)} onSaved={saved} />
+      )}
+      {modal?.type === "stock" && (
+        <ChangeStockModal item={modal.item} onClose={() => setModal(null)} onSaved={saved} />
+      )}
+      {modal?.type === "history" && (
+        <HistoryModal item={modal.item} onClose={() => setModal(null)} />
       )}
     </div>
   );
