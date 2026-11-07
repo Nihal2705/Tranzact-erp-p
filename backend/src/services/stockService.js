@@ -1,4 +1,4 @@
-async function changeStock(client, { itemId, changeQty, changedVia, reason, userId, requestId, orderId }) {
+async function changeStock(client, { itemId, changeQty, changedVia, reason, userId, requestId, orderId, productionOrderId }) { 
   if (requestId) {
     const dup = await client.query(
       "SELECT id FROM stock_history WHERE request_id = $1 AND item_id = $2",
@@ -17,9 +17,9 @@ async function changeStock(client, { itemId, changeQty, changedVia, reason, user
 
   await client.query("UPDATE items SET quantity = $1, updated_at = now() WHERE id = $2", [newQty, itemId]);
   const hist = await client.query(
-  `INSERT INTO stock_history (item_id, change_qty, balance_after, changed_via, reason, changed_by, request_id, order_id)
-   VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-  [itemId, changeQty, newQty, changedVia, reason, userId, requestId || null, orderId || null]
+  `INSERT INTO stock_history (item_id, change_qty, balance_after, changed_via, reason, changed_by, request_id, order_id, production_order_id)
+   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+  [itemId, changeQty, newQty, changedVia, reason, userId, requestId || null, orderId || null, productionOrderId || null]
 );
   return { item: { ...item, quantity: newQty }, history_entry: hist.rows[0] };
 }

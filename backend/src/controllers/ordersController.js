@@ -173,4 +173,9 @@ async function getTimeline(req, res) {
   events.sort((a, b) => new Date(a.date) - new Date(b.date));
   res.json(events);
 }
+async function getOrder(req, res) {
+  const order = await getOrderById(Number(req.params.id));
+  if (!order) return res.status(404).json({ error: "Order not found" });
+  res.json(order);
+}
 module.exports = { getOrders, createOrder, updateOrderStatus, getTimeline };
