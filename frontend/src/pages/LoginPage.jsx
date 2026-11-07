@@ -17,7 +17,7 @@ export default function LoginPage() {
       const { data } = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/dashboard");
+      navigate(data.user.role === "Worker" ? "/inventory" : "/dashboard");
     } catch (err) {
       setError(err.response?.data?.error || "Cannot reach the server");
     } finally {
