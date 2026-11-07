@@ -17,5 +17,10 @@ app.get("/api/health", async (req, res) => {
   }
 });
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/items", require("./routes/itemsRoutes"));
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: "Something went wrong" });
+});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
