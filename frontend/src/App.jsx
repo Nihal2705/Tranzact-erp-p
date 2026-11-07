@@ -1,3 +1,7 @@
+import ProductionPage from "./pages/ProductionPage";
+import ProductionDetailsPage from "./pages/ProductionDetailsPage";
+import OrdersPage from "./pages/OrdersPage";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 import InventoryPage from "./pages/InventoryPage";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
@@ -15,7 +19,11 @@ export default function App() {
           <Route path="/dashboard"  element={<DashboardPage />} />
           
           <Route path="/inventory" element={<InventoryPage />} />
-          <Route path="/production" element={<ComingSoon title="Production" />} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailsPage />} />
+          
+          <Route path="/production" element={<ProductionPage />} />
+          <Route path="/production/:id" element={<ProductionDetailsPage />} />
           <Route path="/reports"    element={<ComingSoon title="Reports" />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
