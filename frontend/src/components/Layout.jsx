@@ -1,3 +1,4 @@
+import Logo from './Logo';
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
@@ -27,9 +28,9 @@ export default function Layout() {
   };
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-gradient-to-b from-teal-800 to-teal-950 text-teal-50">
+    <div className="flex h-full flex-col bg-gradient-to-b from-teal-700 to-teal-950 text-teal-50">
       <div className="flex items-center gap-3 px-5 py-6">
-        <div className="grid h-9 w-9 place-items-center rounded-xl bg-teal-400 text-lg font-extrabold text-teal-950">T</div>
+       <Logo size={34} />
         <span className="text-lg font-bold">TranZact ERP</span>
       </div>
       <nav className="flex-1 space-y-1 px-3">
